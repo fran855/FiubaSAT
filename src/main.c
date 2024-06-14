@@ -24,7 +24,6 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask __attribute__((unused)), c
 
 static void taskPeriodic(void *pvParameters) {
     TaskHandle_t xHandle = (TaskHandle_t) pvParameters;
-    char *taskName = "taskPeriodic is running\r\n";
     int i = 0;
     for (;;) {
         if (i == 0) {
@@ -35,8 +34,8 @@ static void taskPeriodic(void *pvParameters) {
             i = 0;
         }
         if(xSemaphoreTake(uart1_mutex, portMAX_DELAY) == pdTRUE) {
-            UART1_puts(taskName);
-            UART2_puts("Probando UART2\r\n");
+            UART1_puts("taskPeriodic is running\r\n");
+            UART2_puts("Transmiting through UART2\r\n");
             xSemaphoreGive(uart1_mutex);
         }
         vTaskDelay(pdMS_TO_TICKS(5000));
@@ -67,16 +66,18 @@ int main(void) {
 
     UART1_setup();
     UART2_setup();
-
     blink_setup();
-	xTaskCreate(taskBlink, "LED", 100, NULL, 2, &blink_handle);  // Crear tarea para parpadear el LED
-    xTaskCreate(taskPeriodic, "Periodic", 100, (void *)blink_handle, 2, NULL);  // Crear tarea Periódica
+
+    xTaskCreate(taskBlink, "LED", 100, NULL, 2, &blink_handle);  // Crear tarea para parpadear el LED
+    //xTaskCreate(taskPeriodic, "Periodic", 100, (void *)blink_handle, 2, NULL);  // Crear tarea Periódica
+
     xTaskCreate(taskUART1_transmit, "UART1_transmit", 100, NULL, 2, NULL);  // Crear tarea para UART_transmit
     xTaskCreate(taskUART1_receive, "UART1_receive", 100, NULL, 2, NULL);  // Crear tarea para UART_receive
     
     xTaskCreate(taskUART2_transmit, "UART2_transmit", 100, NULL, 2, NULL);  // Crear tarea para UART_transmit
     xTaskCreate(taskUART2_receive, "UART2_receive", 100, NULL, 2, NULL);  // Crear tarea para UART_receive
 
+    /*
     auto_reload_timer = xTimerCreate("AutoReload", pdMS_TO_TICKS(5000), pdTRUE, (void *) 0, autoReloadCallback);
 
     // Revisar que el UART no manda nada hasta que el Scheduler no funcione
@@ -87,6 +88,8 @@ int main(void) {
             UART1_puts("Timer start failed\n");
         }
     }
+    */
+
     // Start RTOS Task scheduler
 	vTaskStartScheduler();
 

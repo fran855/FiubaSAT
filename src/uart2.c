@@ -7,7 +7,7 @@
 static QueueHandle_t uart2_txq; // TX queue for UART
 static QueueHandle_t uart2_rxq; // RX queue for UART
 
-SemaphoreHandle_t uart_mutex;
+SemaphoreHandle_t uart2_mutex;
 
 void UART2_setup(void) {
     rcc_periph_clock_enable(RCC_GPIOA);
@@ -43,14 +43,14 @@ void UART2_setup(void) {
     uart2_rxq = xQueueCreate(SIZE_BUFFER_USART, sizeof(uint8_t));
 
     // Create a mutex for UART
-    uart_mutex = xSemaphoreCreateBinary();
-    if(uart_mutex == NULL) {
+    uart2_mutex = xSemaphoreCreateBinary();
+    if(uart2_mutex == NULL) {
         UART2_puts("Error al crear mutex\n");
     }
     else {
-        UART2_puts("Se creó el mutex\n");
+        UART2_puts("Se creó el mutex\n\r");
     }
-    xSemaphoreGive(uart_mutex);
+    xSemaphoreGive(uart2_mutex);
 }
 
 void taskUART2_transmit(void *args __attribute__((unused))) {
@@ -70,11 +70,7 @@ void taskUART2_receive(void *args __attribute__((unused))) {
     uint8_t data;
     for(;;) {
         while (xQueueReceive(uart2_rxq, &data, pdMS_TO_TICKS(500)) == pdPASS) {
-            xQueueSend(uart2_txq, &data, portMAX_DELAY);
-            if (data == '\r') {        // Esto es para el Putty
-                data = '\n';
-                xQueueSend(uart2_txq, &data, portMAX_DELAY);
-            }
+            UART1_putchar(data);
         }
         vTaskDelay(pdMS_TO_TICKS(50));
     }

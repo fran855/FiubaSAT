@@ -70,11 +70,11 @@ void taskUART1_receive(void *args __attribute__((unused))) {
     uint8_t data;
     for(;;) {
         while (xQueueReceive(uart1_rxq, &data, pdMS_TO_TICKS(500)) == pdPASS) {
-            xQueueSend(uart1_txq, &data, portMAX_DELAY);
+            UART1_putchar(data);
             UART2_putchar(data);
             if (data == '\r') {        // Esto es para el Putty
                 data = '\n';
-                xQueueSend(uart1_txq, &data, portMAX_DELAY);
+                UART1_putchar(data);
                 UART2_putchar(data);
             }
         }
@@ -93,6 +93,10 @@ uint16_t UART1_puts(const char *s) {
         nsent++;
     }
     return nsent;
+}
+
+void UART1_putchar(char ch) {
+    xQueueSend(uart1_txq, &ch, portMAX_DELAY);
 }
 
 void usart1_isr() {

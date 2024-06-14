@@ -26,6 +26,8 @@
         "gpio.h": "c",
         "usart.h": "c",
         "rcc.h": "c",
-        "semphr.h": "c"
+        "semphr.h": "c",
+        "uart1.h": "c",
+        "freertos.h": "c"
     }
 }
