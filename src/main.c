@@ -67,6 +67,7 @@ int main(void) {
     UART1_setup();
     UART2_setup();
     blink_setup();
+    //InitLogFile();
 
     xTaskCreate(taskBlink, "LED", 100, NULL, 2, &blink_handle);  // Crear tarea para parpadear el LED
     //xTaskCreate(taskPeriodic, "Periodic", 100, (void *)blink_handle, 2, NULL);  // Crear tarea Periódica
@@ -95,5 +96,9 @@ int main(void) {
 
     // The task scheduler is blocking, so we should never come here...
 	for (;;);
+
+    // Cierra el archivo de log (aunque este punto no debería alcanzarse nunca)
+    //CloseLogFile();
+    
 	return 0;
 }
