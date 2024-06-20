@@ -9,6 +9,8 @@ static QueueHandle_t uart1_rxq; // RX queue for UART
 
 SemaphoreHandle_t uart1_mutex;
 
+static void UART1_process_data(uint8_t data);
+
 void UART1_setup(void) {
     rcc_periph_clock_enable(RCC_GPIOA);
     rcc_periph_clock_enable(RCC_USART1);
@@ -48,7 +50,7 @@ void UART1_setup(void) {
         UART1_puts("Error al crear mutex\n");
     }
     else {
-        UART1_puts("Se creó el mutex\n");
+        UART1_puts("Se creó el mutex\n\r");
     }
     xSemaphoreGive(uart1_mutex);
 }
@@ -70,15 +72,19 @@ void taskUART1_receive(void *args __attribute__((unused))) {
     uint8_t data;
     for(;;) {
         while (xQueueReceive(uart1_rxq, &data, pdMS_TO_TICKS(500)) == pdPASS) {
-            UART1_putchar(data);
-            UART2_putchar(data);
-            if (data == '\r') {        // Esto es para el Putty
-                data = '\n';
-                UART1_putchar(data);
-                UART2_putchar(data);
-            }
+            UART1_process_data(data);
         }
         vTaskDelay(pdMS_TO_TICKS(50));
+    }
+}
+
+static void UART1_process_data(uint8_t data) {
+    UART1_putchar(data);
+    UART2_putchar(data);
+    if (data == '\r') {        // Esto es para el Putty
+        data = '\n';
+        UART1_putchar(data);
+        UART2_putchar(data);
     }
 }
 

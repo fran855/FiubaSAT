@@ -9,6 +9,8 @@ static QueueHandle_t uart2_rxq; // RX queue for UART
 
 SemaphoreHandle_t uart2_mutex;
 
+static void UART2_process_data(uint8_t data);
+
 void UART2_setup(void) {
     rcc_periph_clock_enable(RCC_GPIOA);
     rcc_periph_clock_enable(RCC_USART2);
@@ -70,10 +72,14 @@ void taskUART2_receive(void *args __attribute__((unused))) {
     uint8_t data;
     for(;;) {
         while (xQueueReceive(uart2_rxq, &data, pdMS_TO_TICKS(500)) == pdPASS) {
-            UART1_putchar(data);
+            UART2_process_data(data);
         }
         vTaskDelay(pdMS_TO_TICKS(50));
     }
+}
+
+static void UART2_process_data(uint8_t data) {
+    UART1_putchar(data);
 }
 
 uint16_t UART2_puts(const char *s) {
