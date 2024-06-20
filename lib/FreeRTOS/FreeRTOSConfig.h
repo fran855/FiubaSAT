@@ -108,6 +108,10 @@
 /*Semaphore*/
 #define configSUPPORT_DYNAMIC_ALLOCATION 1
 
+/*Track for log file */
+//#define traceTASK_SWITCHED_IN()  LogTaskSwitchIn(pxCurrentTCB)
+//#define traceTASK_SWITCHED_OUT() LogTaskSwitchOut(pxCurrentTCB)
+
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 		0
 #define configMAX_CO_ROUTINE_PRIORITIES ( 2 )

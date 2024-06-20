@@ -28,6 +28,8 @@
         "rcc.h": "c",
         "semphr.h": "c",
         "uart1.h": "c",
-        "freertos.h": "c"
+        "freertos.h": "c",
+        "queue.h": "c",
+        "task.h": "c"
     }
 }
